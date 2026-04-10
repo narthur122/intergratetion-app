@@ -349,6 +349,43 @@
         pre a:hover {
             filter: brightness(1.2);
         }
+
+        /* Refresh Transaction ID Button */
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-with-btn input {
+            flex: 1;
+        }
+
+        .refresh-txn-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--accent);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+
+        .refresh-txn-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+            transform: rotate(180deg);
+        }
+
+        .refresh-txn-btn svg {
+            width: 16px;
+            height: 16px;
+        }
     </style>
     <style>
     .glass-nav {
@@ -620,6 +657,13 @@
             });
         }
 
+        function refreshTransactionID() {
+            const txnInput = getEl('txn-id-input');
+            if (!txnInput) return;
+            txnInput.value = 'TXN_' + generateGUID().split('-')[0];
+            generateAll();
+        }
+
         function switchConfig(currency) {
             currentCurrency = currency;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.id === `btn-${currency}`));
@@ -644,7 +688,7 @@
                 { key: currentCurrency === 'MMK' ? 'DepositChannel' : 'DepositType', val: '20', type: 'text' },
                 { key: 'Amount', val: currentCurrency === 'BDT' ? '300' : '2000', type: 'text' },
                 { key: 'TimeSubmit', val: getRegionTime(currentCurrency), type: 'text' },
-                { key: 'TransactionID', val: 'TXN_' + generateGUID().split('-')[0], type: 'text' }
+                { key: 'TransactionID', val: 'TXN_' + generateGUID().split('-')[0], type: 'text', refreshable: true }
             ];
 
             const container = getEl('param-inputs');
@@ -652,9 +696,23 @@
             container.innerHTML = '';
 
             fields.forEach(f => {
-                let inputHtml = f.type === 'select'
-                    ? `<select class="api-param" data-key="${f.key}" oninput="generateAll()">${f.options.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}</select>`
-                    : `<input type="text" class="api-param" data-key="${f.key}" value="${f.val}" oninput="generateAll()">`;
+                let inputHtml;
+                if (f.type === 'select') {
+                    inputHtml = `<select class="api-param" data-key="${f.key}" oninput="generateAll()">${f.options.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}</select>`;
+                } else if (f.refreshable) {
+                    inputHtml = `<div class="input-with-btn">
+                        <input type="text" class="api-param" id="txn-id-input" data-key="${f.key}" value="${f.val}" oninput="generateAll()">
+                        <button type="button" class="refresh-txn-btn" onclick="refreshTransactionID()" title="Refresh Transaction ID">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </button>
+                    </div>`;
+                } else {
+                    inputHtml = `<input type="text" class="api-param" data-key="${f.key}" value="${f.val}" oninput="generateAll()">`;
+                }
 
                 const div = document.createElement('div');
                 div.className = 'form-group';

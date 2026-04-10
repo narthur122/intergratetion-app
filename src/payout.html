@@ -287,9 +287,7 @@
             text-decoration: underline;
             font-weight: 600;
         }
-    </style>
-    
-    <style>
+
         .glass-nav {
             position: fixed;
             top: 20px;
@@ -310,7 +308,6 @@
                 top: -100px;
                 opacity: 0;
             }
-
             to {
                 top: 20px;
                 opacity: 1;
@@ -343,7 +340,6 @@
             text-transform: uppercase;
         }
 
-        /* Hiệu ứng cho Deposit */
         .nav-link[href="/"]:hover .text,
         .nav-link[href="/"].active .text {
             color: #3b82f6;
@@ -354,13 +350,12 @@
             box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.2);
         }
 
-        /* Hiệu ứng cho Payout */
         .nav-link[href="/payout"]:hover .text,
-        .nav-link[href="/payout"].active .text {
+        .nav-link[href="/payout.html"].active .text {
             color: #d946ef;
         }
 
-        .nav-link[href="/payout"].active {
+        .nav-link[href="/payout.html"].active {
             background: rgba(217, 70, 239, 0.15);
             box-shadow: inset 0 0 10px rgba(217, 70, 239, 0.2);
         }
@@ -372,26 +367,55 @@
             margin: 0 5px;
         }
 
-        /* Hiệu ứng gợn sóng khi hover */
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: currentColor;
-            transition: all 0.4s ease;
-            transform: translateX(-50%);
-        }
-
-        .nav-link:hover::after {
-            width: 40%;
-        }
-
-        /* Đẩy container xuống để không bị Navbar đè lên */
         .container {
             margin-top: 100px !important;
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
+        }
+
+        .refresh-btn {
+            padding: 0 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--accent-payout);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(217, 70, 239, 0.1);
+            border-color: var(--accent-payout);
+            transform: scale(1.05);
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .code-tab {
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .code-tab.active {
+            background: rgba(217, 70, 239, 0.1);
+            color: var(--accent-payout);
+            border-color: var(--accent-payout);
         }
     </style>
 </head>
@@ -399,13 +423,12 @@
 <body>
     <nav class="glass-nav">
         <div class="nav-container">
-            <a href="/"
-                class="nav-link ${window.location.pathname === '/' || window.location.pathname.endsWith('index.html') ? 'active' : ''}">
+            <a href="/" class="nav-link">
                 <span class="icon">📥</span>
                 <span class="text">Deposit Studio</span>
             </a>
             <div class="nav-divider"></div>
-            <a href="/payout.html" class="nav-link ${window.location.pathname.includes('payout') ? 'active' : ''}">
+            <a href="/payout.html" class="nav-link active">
                 <span class="icon">📤</span>
                 <span class="text">Payout Studio</span>
             </a>
@@ -470,6 +493,25 @@
                             <button class="copy-btn" onclick="copyContent('curl-output')">COPY</button>
                         </div>
 
+                        <label style="margin-top: 20px;">Signing String (Raw)</label>
+                        <div class="code-block" style="background: rgba(217, 70, 239, 0.05); border-color: rgba(217, 70, 239, 0.2);">
+                            <pre id="signing-string-output" style="color: #d946ef; white-space: pre-wrap; word-break: break-all;">Waiting...</pre>
+                            <button class="copy-btn" onclick="copyContent('signing-string-output')">COPY</button>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <label style="margin-bottom: 10px; display: block;">Implementation Snippet</label>
+                            <div class="code-tabs">
+                                <button class="code-tab active" onclick="switchSnippet('Node')">Node.js</button>
+                                <button class="code-tab" onclick="switchSnippet('Bash')">Bash</button>
+                                <button class="code-tab" onclick="switchSnippet('Postman')">Postman</button>
+                            </div>
+                            <div class="code-block" style="background: rgba(0,0,0,0.2);">
+                                <pre id="snippet-output" style="font-size: 0.75rem; color: #818cf8;">Generating block...</pre>
+                                <button class="copy-btn" onclick="copyContent('snippet-output')">COPY</button>
+                            </div>
+                        </div>
+
                         <button id="btn-execute" class="btn-payout" style="margin-top: 25px;" onclick="executePayout()">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="3">
@@ -527,12 +569,6 @@
             return text.replace(/(https?:\/\/[^\s"'<>]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
         }
 
-        function getFormattedTime() {
-            const now = new Date();
-            const pad = (n) => n.toString().padStart(2, '0');
-            return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        }
-
         function switchConfig(ccy) {
             currentCurrency = ccy;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${ccy}`));
@@ -543,12 +579,10 @@
         function renderFields() {
             const container = document.getElementById('dynamic-params');
 
-            // Base fields dùng chung
             let fields = [
                 { k: 'MerchantCode', v: 'TEST001' },
                 { k: 'PlayerID', v: '123456' },
                 { k: 'TransactionID', v: 'TX' + Date.now() },
-                { k: 'TimeSubmit', v: getFormattedTime() },
                 { k: 'CallbackURL', v: 'https://yourserver.com/callback' },
                 { k: 'Currency', v: currentCurrency },
                 { k: 'BankCode', v: configs[currentCurrency].banks[0].v, type: 'select', opts: configs[currentCurrency].banks },
@@ -558,19 +592,40 @@
                 { k: 'MerchantSubmitTime', v: Date.now() }
             ];
 
-            // Nếu là PKR hoặc BDT, thêm field PayoutType
             if (currentCurrency === 'PKR' || currentCurrency === 'BDT') {
                 fields.push({ k: 'PayoutType', v: '1' });
             }
 
-            container.innerHTML = fields.map(f => `
-            <div class="form-group">
-                <label>${f.k}</label>
-                ${f.type === 'select'
-                    ? `<select class="api-param" data-key="${f.k}" oninput="generateAll()">${f.opts.map(o => `<option value="${o.v}">${o.l}</option>`).join('')}</select>`
-                    : `<input type="text" class="api-param" data-key="${f.k}" value="${f.val || f.v}" oninput="generateAll()">`}
-            </div>
-        `).join('');
+            container.innerHTML = fields.map(f => {
+                const hasBtn = ['TransactionID', 'MerchantSubmitTime'].includes(f.k);
+                return `
+                <div class="form-group ${f.k === 'MerchantCode' || f.k === 'PlayerID' ? '' : ''}">
+                    <label>${f.k}</label>
+                    <div class="${hasBtn ? 'input-with-btn' : ''}">
+                        ${f.type === 'select'
+                        ? `<select class="api-param" data-key="${f.k}" oninput="generateAll()">${f.opts.map(o => `<option value="${o.v}">${o.l}</option>`).join('')}</select>`
+                        : `<input type="text" class="api-param" id="param-${f.k}" data-key="${f.k}" value="${f.val || f.v}" oninput="generateAll()">`}
+                        ${hasBtn ? `<button class="refresh-btn" onclick="refreshField('${f.k}')">↻</button>` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function refreshField(key) {
+            const input = document.getElementById(`param-${key}`);
+            if (key === 'TransactionID') {
+                input.value = 'TX' + Date.now();
+            } else if (key === 'MerchantSubmitTime') {
+                input.value = Date.now();
+            }
+            generateAll();
+        }
+
+        let activeSnippetLang = 'Node';
+        function switchSnippet(lang) {
+            activeSnippetLang = lang;
+            document.querySelectorAll('.code-tab').forEach(b => b.classList.toggle('active', b.innerText === lang));
+            generateAll();
         }
 
         function generateAll() {
@@ -580,11 +635,12 @@
 
             let data = {};
             document.querySelectorAll('.api-param').forEach(i => {
-                // Ép kiểu PayoutType về number nếu là PKR/BDT cho đúng format bro đưa
-                if (i.dataset.key === 'PayoutType') {
-                    data[i.dataset.key] = Number(i.value);
+                const key = i.dataset.key;
+                const val = i.value;
+                if (['PayoutType', 'MerchantSubmitTime'].includes(key)) {
+                    data[key] = isNaN(val) ? val : Number(val);
                 } else {
-                    data[i.dataset.key] = i.value;
+                    data[key] = val;
                 }
             });
 
@@ -593,7 +649,21 @@
             const signature = CryptoJS.MD5(signStr).toString().toUpperCase();
 
             activePayload = { ...data, Signature: signature };
+            document.getElementById('signing-string-output').innerText = signStr;
             document.getElementById('curl-output').innerText = `curl --location '${activeEndpoint}' \\\n--header 'Content-Type: application/json' \\\n--data '${JSON.stringify(activePayload, null, 2)}'`;
+
+            renderSnippet(data, document.getElementById('secret_key').value, keys, signStr);
+        }
+
+        function renderSnippet(data, secret, keys, signStr) {
+            const out = document.getElementById('snippet-output');
+            if (activeSnippetLang === 'Node') {
+                out.innerText = `const crypto = require('crypto');\n\nconst params = ${JSON.stringify(data, null, 2)};\nconst secretKey = '${secret}';\n\nconst keys = Object.keys(params).sort();\nconst signStr = keys.map(k => \`\${k}=\${params[k]}\`).join('&') + \`&SecretKey=\${secretKey}\`;\nconst signature = crypto.createHash('md5').update(signStr).digest('hex').toUpperCase();\n\nconsole.log("Signature:", signature);`;
+            } else if (activeSnippetLang === 'Postman') {
+                out.innerText = `// Postman Pre-request Script\n// Instructions: Use {{signature}} in your JSON body value\n\nconst secretKey = "${secret}";\nlet requestBody = JSON.parse(pm.request.body.raw);\n\n// 1. Remove Signature if it already exists to avoid recursive signing\ndelete requestBody.Signature;\n\n// 2. Sort and Sign\nconst keys = Object.keys(requestBody).sort();\nconst signStr = keys.map(k => \`\${k}=\${requestBody[k]}\`).join('&') + \`&SecretKey=\${secretKey}\`;\nconst signature = CryptoJS.MD5(signStr).toString().toUpperCase();\n\n// 3. Set variable for use in Body\npm.collectionVariables.set("signature", signature);\nconsole.log("Calculated Signature:", signature);`;
+            } else {
+                out.innerText = `# Bash / Shell implementation\nSECRET_KEY="${secret}"\n\n# Signature path (Sorted keys used for this payload):\n# ${keys.join(' -> ')}\n\nSIGN_STR="${signStr}"\nSIGNATURE=$(echo -n "$SIGN_STR" | md5sum | awk '{print $1}' | tr '[:lower:]' '[:upper:]')\n\necho "Signature: $SIGNATURE"`;
+            }
         }
 
         async function executePayout() {
