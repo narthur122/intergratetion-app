@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payout | Payout Ultimate Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-payout: #0a0118;
+            --card-payout: rgba(23, 10, 45, 0.6);
+            --accent-payout: #d946ef;
+            --accent-glow: rgba(217, 70, 239, 0.3);
+            --secondary-glow: #8b5cf6;
+            --text-main: #f5f3ff;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-payout: 24px;
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.15) 0%, transparent 40%), var(--bg-payout);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #f5d0fe 0%, #d946ef 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 35px;
+        }
+
+        .tab-btn {
+            padding: 10px 30px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            backdrop-filter: blur(15px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent-payout), var(--secondary-glow));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 25px -5px var(--accent-glow);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-payout);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-payout);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #f5d0fe;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-payout);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-payout);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+        }
+
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .code-block {
+            position: relative;
+            background: #05010d;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+        }
+
+        pre {
+            margin: 0;
+            padding: 18px;
+            color: #e9d5ff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            cursor: pointer;
+        }
+
+        .btn-payout {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #d946ef 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 15px 30px -5px var(--accent-glow);
+            text-transform: uppercase;
+        }
+
+        .btn-payout:hover:not(:disabled) {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+            box-shadow: 0 20px 40px -5px rgba(217, 70, 239, 0.4);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .status-200 {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        pre a {
+            color: #f472b6 !important;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+    </style>
+    
+    <style>
+        .glass-nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: rgba(23, 10, 45, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(217, 70, 239, 0.1);
+            animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes navSlideDown {
+            from {
+                top: -100px;
+                opacity: 0;
+            }
+
+            to {
+                top: 20px;
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 25px;
+            text-decoration: none;
+            border-radius: 40px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link .text {
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Hiệu ứng cho Deposit */
+        .nav-link[href="/"]:hover .text,
+        .nav-link[href="/"].active .text {
+            color: #3b82f6;
+        }
+
+        .nav-link[href="/"].active {
+            background: rgba(59, 130, 246, 0.15);
+            box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Hiệu ứng cho Payout */
+        .nav-link[href="/payout"]:hover .text,
+        .nav-link[href="/payout"].active .text {
+            color: #d946ef;
+        }
+
+        .nav-link[href="/payout"].active {
+            background: rgba(217, 70, 239, 0.15);
+            box-shadow: inset 0 0 10px rgba(217, 70, 239, 0.2);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 5px;
+        }
+
+        /* Hiệu ứng gợn sóng khi hover */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: currentColor;
+            transition: all 0.4s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 40%;
+        }
+
+        /* Đẩy container xuống để không bị Navbar đè lên */
+        .container {
+            margin-top: 100px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <a href="/"
+                class="nav-link ${window.location.pathname === '/' || window.location.pathname.endsWith('index.html') ? 'active' : ''}">
+                <span class="icon">📥</span>
+                <span class="text">Deposit Studio</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/payout.html" class="nav-link ${window.location.pathname.includes('payout') ? 'active' : ''}">
+                <span class="icon">📤</span>
+                <span class="text">Payout Studio</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Payout Payout Studio</h1>
+            <p>Smart Logic • Multi-Region Binding (PKR/BDT/MMK)</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-MMK" onclick="switchConfig('MMK')">Myanmar (MMK)</button>
+            <button class="tab-btn" id="btn-PKR" onclick="switchConfig('PKR')">Pakistan (PKR)</button>
+            <button class="tab-btn" id="btn-BDT" onclick="switchConfig('BDT')">Bangladesh (BDT)</button>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2>💎 Configuration</h2>
+                </div>
+                <div class="card-body">
+                    <div class="params-grid">
+                        <div class="form-group full-width">
+                            <label>Base API Domain</label>
+                            <input type="text" id="base_url" value="https://bo.fninnovations.com"
+                                oninput="generateAll()">
+                            <span id="preview-url"
+                                style="font-size: 0.7rem; color: var(--accent-payout); margin-top: 6px; display: block; font-family: monospace;"></span>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Merchant Secret Key</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="secret_key" value="YOUR_SECRET_KEY" oninput="generateAll()">
+                                <button class="toggle-btn" onclick="toggleSecret()">
+                                    <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dynamic-params" class="params-grid"
+                        style="margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 20px;"></div>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🚀 Execution Console</h2>
+                    </div>
+                    <div class="card-body">
+                        <label>Generated cURL (JSON)</label>
+                        <div class="code-block">
+                            <pre id="curl-output">Waiting...</pre>
+                            <button class="copy-btn" onclick="copyContent('curl-output')">COPY</button>
+                        </div>
+
+                        <button id="btn-execute" class="btn-payout" style="margin-top: 25px;" onclick="executePayout()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                            Confirm Dispatch
+                        </button>
+
+                        <div style="margin-top: 25px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                            <label style="display: flex; justify-content: space-between;">📡 API Response <span
+                                    id="status-badge" class="status-badge" style="display:none"></span></label>
+                            <div class="code-block" style="background: rgba(0,0,0,0.4);">
+                                <pre id="response-output" style="color: #94a3b8;">Awaiting action...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let currentCurrency = 'MMK';
+        let activePayload = {};
+        let activeEndpoint = "";
+        const PROXY_URL = 'https://julies.jsmart.qzz.io/proxy';
+
+        const configs = {
+            MMK: { banks: [{ v: 'WAVEPAY', l: 'WAVEPAY' }, { v: 'KBZPAY', l: 'KBZPAY' }] },
+            PKR: { banks: [{ v: 'JAZZCASH', l: 'JAZZCASH' }, { v: 'EASYPAISA', l: 'EASYPAISA' }] },
+            BDT: {
+                banks: [
+                    { v: 'NAGAD', l: 'NAGAD' }, { v: 'NAGADC', l: 'NAGADC' },
+                    { v: 'BKASH', l: 'BKASH' }, { v: 'BKASHC', l: 'BKASHC' },
+                    { v: 'ROCKET', l: 'ROCKET' }, { v: 'ROCKETC', l: 'ROCKETC' },
+                    { v: 'UPAY', l: 'UPAY' }, { v: 'UPAYC', l: 'UPAYC' }
+                ]
+            }
+        };
+
+        function toggleSecret() {
+            const x = document.getElementById("secret_key");
+            const icon = document.getElementById("eye-icon");
+            if (x.type === "password") {
+                x.type = "text";
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"></path>';
+            } else {
+                x.type = "password";
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+
+        function linkify(text) {
+            return text.replace(/(https?:\/\/[^\s"'<>]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
+        }
+
+        function getFormattedTime() {
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        }
+
+        function switchConfig(ccy) {
+            currentCurrency = ccy;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${ccy}`));
+            renderFields();
+            generateAll();
+        }
+
+        function renderFields() {
+            const container = document.getElementById('dynamic-params');
+
+            // Base fields dùng chung
+            let fields = [
+                { k: 'MerchantCode', v: 'TEST001' },
+                { k: 'PlayerID', v: '123456' },
+                { k: 'TransactionID', v: 'TX' + Date.now() },
+                { k: 'TimeSubmit', v: getFormattedTime() },
+                { k: 'CallbackURL', v: 'https://yourserver.com/callback' },
+                { k: 'Currency', v: currentCurrency },
+                { k: 'BankCode', v: configs[currentCurrency].banks[0].v, type: 'select', opts: configs[currentCurrency].banks },
+                { k: 'AccountNumber', v: '3347717666' },
+                { k: 'AccountName', v: 'jonathan' },
+                { k: 'Amount', v: '1' },
+                { k: 'MerchantSubmitTime', v: Date.now() }
+            ];
+
+            // Nếu là PKR hoặc BDT, thêm field PayoutType
+            if (currentCurrency === 'PKR' || currentCurrency === 'BDT') {
+                fields.push({ k: 'PayoutType', v: '1' });
+            }
+
+            container.innerHTML = fields.map(f => `
+            <div class="form-group">
+                <label>${f.k}</label>
+                ${f.type === 'select'
+                    ? `<select class="api-param" data-key="${f.k}" oninput="generateAll()">${f.opts.map(o => `<option value="${o.v}">${o.l}</option>`).join('')}</select>`
+                    : `<input type="text" class="api-param" data-key="${f.k}" value="${f.val || f.v}" oninput="generateAll()">`}
+            </div>
+        `).join('');
+        }
+
+        function generateAll() {
+            let baseUrl = document.getElementById('base_url').value.trim().replace(/\/$/, "");
+            activeEndpoint = `${baseUrl}/${currentCurrency}/Payout`;
+            document.getElementById('preview-url').innerText = `Target: ${activeEndpoint}`;
+
+            let data = {};
+            document.querySelectorAll('.api-param').forEach(i => {
+                // Ép kiểu PayoutType về number nếu là PKR/BDT cho đúng format bro đưa
+                if (i.dataset.key === 'PayoutType') {
+                    data[i.dataset.key] = Number(i.value);
+                } else {
+                    data[i.dataset.key] = i.value;
+                }
+            });
+
+            const keys = Object.keys(data).sort();
+            let signStr = keys.map(k => `${k}=${data[k]}`).join('&') + `&SecretKey=${document.getElementById('secret_key').value}`;
+            const signature = CryptoJS.MD5(signStr).toString().toUpperCase();
+
+            activePayload = { ...data, Signature: signature };
+            document.getElementById('curl-output').innerText = `curl --location '${activeEndpoint}' \\\n--header 'Content-Type: application/json' \\\n--data '${JSON.stringify(activePayload, null, 2)}'`;
+        }
+
+        async function executePayout() {
+            const btn = document.getElementById('btn-execute');
+            const resOut = document.getElementById('response-output');
+            const badge = document.getElementById('status-badge');
+
+            generateAll();
+            btn.disabled = true;
+            btn.innerText = "DISPATCHING...";
+            resOut.innerText = "Routing via Local Proxy...";
+
+            try {
+                const res = await fetch(PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetUrl: activeEndpoint, payload: activePayload })
+                });
+                const data = await res.json();
+                badge.style.display = "inline-block";
+                badge.innerText = res.status;
+                badge.className = `status-badge ${res.ok ? 'status-200' : 'status-error'}`;
+                resOut.innerHTML = linkify(JSON.stringify(data, null, 2));
+            } catch (e) {
+                resOut.innerText = "Error: " + e.message + "\nCheck if Proxy Server is running.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "CONFIRM DISPATCH";
+            }
+        }
+
+        function copyContent(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = "COPIED!";
+            setTimeout(() => btn.innerText = "COPY", 2000);
+        }
+        window.onload = () => switchConfig('MMK');
+    </script>
+</body>
+
+</html>

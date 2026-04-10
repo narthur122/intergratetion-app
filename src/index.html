@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit | Live API Studio (v6 Ultimate)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-weight: 800;
+            font-size: 2rem;
+            margin: 0;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            border-color: var(--accent);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Form */
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 6px;
+            display: block;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Nâng cấp 2: Input Mật khẩu có nút show/hide */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .toggle-password-btn:hover {
+            color: var(--accent);
+        }
+
+        /* Output & Code */
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .code-block {
+            position: relative;
+            background: #020617;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            margin-top: 5px;
+        }
+
+        pre {
+            margin: 0;
+            padding: 15px;
+            color: #cbd5e1;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Response Box */
+        .response-box {
+            margin-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .status-200 {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        /* Link styling inside pre */
+        pre a {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        pre a:hover {
+            filter: brightness(1.2);
+        }
+    </style>
+    <style>
+    .glass-nav {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        background: rgba(23, 10, 45, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 6px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(217, 70, 239, 0.1);
+        animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes navSlideDown {
+        from { top: -100px; opacity: 0; }
+        to { top: 20px; opacity: 1; }
+    }
+
+    .nav-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 25px;
+        text-decoration: none;
+        border-radius: 40px;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-link .text {
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    /* Hiệu ứng cho Deposit */
+    .nav-link[href="/"]:hover .text, 
+    .nav-link[href="/"].active .text { color: #3b82f6; }
+    .nav-link[href="/"].active { background: rgba(59, 130, 246, 0.15); box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.2); }
+
+    /* Hiệu ứng cho Payout */
+    .nav-link[href="/payout"]:hover .text, 
+    .nav-link[href="/payout"].active .text { color: #d946ef; }
+    .nav-link[href="/payout"].active { background: rgba(217, 70, 239, 0.15); box-shadow: inset 0 0 10px rgba(217, 70, 239, 0.2); }
+
+    .nav-divider {
+        width: 1px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0 5px;
+    }
+
+    /* Hiệu ứng gợn sóng khi hover */
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: all 0.4s ease;
+        transform: translateX(-50%);
+    }
+
+    .nav-link:hover::after { width: 40%; }
+    
+    /* Đẩy container xuống để không bị Navbar đè lên */
+    .container { margin-top: 100px !important; }
+</style>
+</head>
+
+<body>
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <a href="/"
+                class="nav-link ${window.location.pathname === '/' || window.location.pathname.endsWith('index.html') ? 'active' : ''}">
+                <span class="icon">📥</span>
+                <span class="text">Deposit Studio</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/payout.html" class="nav-link ${window.location.pathname.includes('payout') ? 'active' : ''}">
+                <span class="icon">📤</span>
+                <span class="text">Payout Studio</span>
+            </a>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1>Deposit Live API Studio</h1>
+            <p>Smart Routing • Proxy v6 • Auto-Link Detection</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-MMK" onclick="switchConfig('MMK')">Myanmar (MMK)</button>
+            <button class="tab-btn" id="btn-PKR" onclick="switchConfig('PKR')">Pakistan (PKR)</button>
+            <button class="tab-btn" id="btn-BDT" onclick="switchConfig('BDT')">Bangladesh (BDT)</button>
+        </div>
+
+        <div class="main-grid">
+            <div class="card" style="gap: 0;">
+                <div class="card-header">
+                    <h2>🌍 Global Settings</h2>
+                </div>
+                <div class="card-body" style="padding-bottom: 10px;">
+                    <div class="params-grid">
+                        <div class="form-group full-width">
+                            <label>Base API Domain</label>
+                            <input type="text" id="base_url" value="https://bo.fninnovations.com"
+                                placeholder="e.g. https://api.yourdomain.com" oninput="generateAll()">
+                            <span id="preview-url" class="helper-text">Target:
+                                https://bo.fninnovations.com/MMK/MemberSubmit</span>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Merchant Secret Key</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="secret_key" value="YOUR_SECRET_KEY_HERE"
+                                    placeholder="For MD5 signature" oninput="generateAll()">
+                                <button type="button" class="toggle-password-btn" onclick="toggleSecretKey()"
+                                    title="Toggle visibility">
+                                    <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-header" style="border-top: 1px dashed var(--glass-border); background: transparent;">
+                    <h2>⚙️ Payload Parameters (<span id="currency-label">MMK</span>)</h2>
+                </div>
+                <div class="card-body" style="padding-top: 15px;">
+                    <div id="param-inputs" class="params-grid"></div>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🚀 Execution Panel (Proxy Mode)</h2>
+                    </div>
+                    <div class="card-body">
+                        <label>cURL Command</label>
+                        <div class="code-block">
+                            <pre id="curl-output">Waiting...</pre>
+                            <button class="copy-btn" onclick="copyContent('curl-output')">COPY</button>
+                        </div>
+
+                        <div
+                            style="margin-top: 15px; padding: 10px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.1);">
+                            <p style="font-size: 0.75rem; color: #34d399; margin: 0; font-weight: 600;">⚠️ PROXY MODE
+                                ACTIVE: Requests are routed through https://julies.jsmart.qzz.io to bypass CORS restrictions.
+                            </p>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="btn-execute" onclick="executeApiRequestViaProxy()">
+                                <span>⚡</span> Send Live Request
+                            </button>
+                            <button class="btn btn-success" onclick="downloadPostmanJson()" title="Export Postman">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="response-box">
+                            <label
+                                style="color: #a78bfa; display: flex; justify-content: space-between; align-items: center;">
+                                📡 API Response
+                                <span id="status-indicator" style="display: none;" class="status-badge"></span>
+                            </label>
+                            <div class="code-block" style="background: rgba(15, 23, 42, 0.8);">
+                                <pre id="api-response-output"
+                                    style="color: #e2e8f0; min-height: 80px;">Awaiting execution...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let currentCurrency = 'MMK';
+        let activePayload = {};
+        let activeEndpoint = "";
+
+        const PROXY_SERVER_URL = 'https://julies.jsmart.qzz.io/proxy';
+        const configs = {
+            MMK: { currency: 'MMK', banks: [{ value: 'WAVEPAY', label: 'WAVEPAY' }, { value: 'KBZPAY', label: 'KBZPAY' }] },
+            PKR: { currency: 'PKR', banks: [{ value: 'JAZZCASH', label: 'JAZZCASH' }, { value: 'EASYPAISA', label: 'EASYPAISA' }] },
+            BDT: {
+                currency: 'BDT',
+                banks: [
+                    { value: 'NAGAD', label: 'NAGAD' },
+                    { value: 'NAGADC', label: 'NAGADC' },
+                    { value: 'BKASH', label: 'BKASH' },
+                    { value: 'BKASHC', label: 'BKASHC' },
+                    { value: 'ROCKET', label: 'ROCKET' },
+                    { value: 'ROCKETC', label: 'ROCKETC' },
+                    { value: 'UPAY', label: 'UPAY' },
+                    { value: 'UPAYC', label: 'UPAYC' }
+                ]
+            }
+        };
+
+        const getEl = (id) => document.getElementById(id);
+
+        // Tính năng Ẩn/Hiện Mật Khẩu
+        function toggleSecretKey() {
+            const input = getEl('secret_key');
+            const icon = getEl('eye-icon');
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Đổi sang SVG icon "Mắt nhắm"
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"></path>';
+            } else {
+                input.type = 'password';
+                // Đổi lại SVG icon "Mắt mở"
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+
+        // Nâng cấp: Regex tìm và biến URL thành Clickable Link
+        function linkifyResponse(text) {
+            // 1. Chống XSS an toàn trước (encode các thẻ HTML rác)
+            let safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // 2. Tìm tất cả các link http/https và bọc thẻ <a> vào
+            const urlRegex = /(https?:\/\/[^\s"'<>]+)/g;
+            return safeText.replace(urlRegex, function (url) {
+                return `<a href="${url}" target="_blank" style="color: #34d399; text-decoration: underline; text-underline-offset: 3px;">${url}</a>`;
+            });
+        }
+
+        function getRegionTime(currency) {
+            const offsets = { 'MMK': 6.5, 'PKR': 5, 'BDT': 6 };
+            const offset = offsets[currency] || 0;
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (offset * 3600000)).toLocaleString('en-GB').replace(',', '');
+        }
+
+        function generateGUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16).toUpperCase();
+            });
+        }
+
+        function switchConfig(currency) {
+            currentCurrency = currency;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.id === `btn-${currency}`));
+
+            if (getEl('currency-label')) getEl('currency-label').innerText = currency;
+            if (getEl('api-response-output')) getEl('api-response-output').innerText = 'Awaiting execution...';
+            if (getEl('status-indicator')) getEl('status-indicator').style.display = 'none';
+
+            renderFields();
+            generateAll();
+        }
+
+        function renderFields() {
+            const config = configs[currentCurrency];
+            const fields = [
+                { key: 'MerchantCode', val: 'TEST001', type: 'text' },
+                { key: 'PlayerID', val: '123456', type: 'text' },
+                { key: 'RedirectURL', val: 'https://yourserver.com/', type: 'text' },
+                { key: 'CallbackURL', val: 'https://yourserver.com/callback', type: 'text' },
+                { key: currentCurrency === 'MMK' ? 'CurrencyCode' : 'Currency', val: config.currency, type: 'text' },
+                { key: 'BankCode', val: config.banks[0].value, type: 'select', options: config.banks },
+                { key: currentCurrency === 'MMK' ? 'DepositChannel' : 'DepositType', val: '20', type: 'text' },
+                { key: 'Amount', val: currentCurrency === 'BDT' ? '300' : '2000', type: 'text' },
+                { key: 'TimeSubmit', val: getRegionTime(currentCurrency), type: 'text' },
+                { key: 'TransactionID', val: 'TXN_' + generateGUID().split('-')[0], type: 'text' }
+            ];
+
+            const container = getEl('param-inputs');
+            if (!container) return;
+            container.innerHTML = '';
+
+            fields.forEach(f => {
+                let inputHtml = f.type === 'select'
+                    ? `<select class="api-param" data-key="${f.key}" oninput="generateAll()">${f.options.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}</select>`
+                    : `<input type="text" class="api-param" data-key="${f.key}" value="${f.val}" oninput="generateAll()">`;
+
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.innerHTML = `<label>${f.key}</label>${inputHtml}`;
+                container.appendChild(div);
+            });
+        }
+
+        function getFullEndpoint() {
+            const baseUrlEl = getEl('base_url');
+            let baseUrl = baseUrlEl ? baseUrlEl.value.trim() : 'https://bo.fninnovations.com';
+            if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+            return `${baseUrl}/${currentCurrency}/MemberSubmit`;
+        }
+
+        function generateAll() {
+            const secretKeyEl = getEl('secret_key');
+            const secretKey = secretKeyEl ? secretKeyEl.value : '';
+            const inputs = document.querySelectorAll('.api-param');
+
+            activeEndpoint = getFullEndpoint();
+            const previewEl = getEl('preview-url');
+            if (previewEl) previewEl.innerText = `Target: ${activeEndpoint}`;
+
+            let data = {};
+            inputs.forEach(i => data[i.getAttribute('data-key')] = i.value);
+
+            const keys = Object.keys(data).sort();
+            let signStr = keys.map(k => `${k}=${data[k]}`).join('&') + `&SecretKey=${secretKey}`;
+            const signature = CryptoJS.MD5(signStr).toString().toUpperCase();
+
+            activePayload = { ...data, Signature: signature };
+
+            const curlEl = getEl('curl-output');
+            if (curlEl) curlEl.innerText = `curl --location '${activeEndpoint}' \\\n--header 'Content-Type: application/json' \\\n--data '${JSON.stringify(activePayload, null, 2)}'`;
+        }
+
+        async function executeApiRequestViaProxy() {
+            const btn = getEl('btn-execute');
+            const resOutput = getEl('api-response-output');
+            const statusBadge = getEl('status-indicator');
+
+            generateAll();
+
+            if (btn) {
+                btn.innerHTML = '⏳ Routing...';
+                btn.disabled = true;
+            }
+            if (resOutput) resOutput.innerText = 'Connecting to local proxy server...';
+            if (statusBadge) statusBadge.style.display = 'none';
+
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(PROXY_SERVER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        targetUrl: activeEndpoint,
+                        payload: activePayload
+                    })
+                });
+
+                const endTime = performance.now();
+                const timeTaken = Math.round(endTime - startTime);
+
+                if (statusBadge) {
+                    statusBadge.style.display = 'inline-block';
+                    statusBadge.innerText = `${response.status} (${timeTaken}ms)`;
+                    statusBadge.className = 'status-badge ' + (response.ok ? 'status-200' : 'status-error');
+                }
+
+                let responseData;
+                try {
+                    responseData = await response.json();
+                    // Thay đổi: Dùng nội dung HTML mới có chứa thẻ <a>
+                    if (resOutput) resOutput.innerHTML = linkifyResponse(JSON.stringify(responseData, null, 2));
+                } catch (e) {
+                    responseData = await response.text();
+                    // Thay đổi: Dùng nội dung HTML mới có chứa thẻ <a>
+                    if (resOutput) resOutput.innerHTML = linkifyResponse(responseData || "(Empty Response Body)");
+                }
+
+            } catch (error) {
+                if (statusBadge) {
+                    statusBadge.style.display = 'inline-block';
+                    statusBadge.innerText = 'PROXY ERROR';
+                    statusBadge.className = 'status-badge status-error';
+                }
+
+                if (resOutput) resOutput.innerText = `Error: ${error.message}\n\n⚠️ Bạn đã chạy server Proxy địa phương chưa?`;
+            } finally {
+                if (btn) {
+                    btn.innerHTML = '<span>⚡</span> Send Live Request';
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function downloadPostmanJson() {
+            generateAll();
+            const secretKeyEl = getEl('secret_key');
+            const secretKey = secretKeyEl ? secretKeyEl.value : '';
+            const inputs = document.querySelectorAll('.api-param');
+            let initialData = {};
+            inputs.forEach(i => initialData[i.getAttribute('data-key')] = i.value);
+
+            const collection = {
+                info: { name: currentCurrency + " API Tool", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+                item: [{
+                    name: "Submit " + currentCurrency,
+                    event: [{
+                        listen: "prerequest", script: {
+                            exec: [
+                                `const secretKey = "${secretKey}";`,
+                                "const data = JSON.parse(pm.request.body.raw);",
+                                "let keys = Object.keys(data).filter(k => k !== 'Signature');",
+                                "keys.sort();",
+                                "let str = keys.map(k => `${k}=${data[k]}`).join('&') + `&SecretKey=${secretKey}`;",
+                                "let signature = CryptoJS.MD5(str).toString().toUpperCase();",
+                                "pm.request.body.raw = JSON.stringify({...data, Signature: signature}, null, 2);"
+                            ], type: "text"
+                        }
+                    }],
+                    request: {
+                        method: "POST", header: [{ key: "Content-Type", value: "application/json" }],
+                        body: { mode: "raw", raw: JSON.stringify(initialData, null, 2) },
+                        url: { raw: activeEndpoint }
+                    }
+                }]
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(collection, null, 2));
+            const a = document.createElement('a'); a.href = dataStr; a.download = currentCurrency.toLowerCase() + "_postman.json"; a.click();
+        }
+
+        function copyContent(id) {
+            const el = getEl(id);
+            if (!el) return;
+            navigator.clipboard.writeText(el.innerText);
+            const btn = el.parentElement.querySelector('.copy-btn');
+            if (btn) {
+                btn.innerText = 'COPIED!';
+                setTimeout(() => btn.innerText = 'COPY', 2000);
+            }
+        }
+
+        window.onload = () => { renderFields(); generateAll(); };
+    </script>
+</body>
+
+</html>
